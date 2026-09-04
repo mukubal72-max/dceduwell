@@ -1,0 +1,6 @@
+{
+  "name": "DC Maxwell Academy",
+  "description": "Complete digital education and learning management ecosystem for DC Maxwell Academy with Student Portal, CBT Exam System, Faculty & Admin CRM Panels, and Live Classes.",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
