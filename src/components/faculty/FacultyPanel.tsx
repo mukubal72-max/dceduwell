@@ -14,6 +14,7 @@ import {
 } from '../../types';
 import { FacultyStudentsAttendanceTab } from './FacultyStudentsAttendanceTab';
 import { FacultyPerformanceTab } from './FacultyPerformanceTab';
+import { StudyMaterialManagerView } from '../admin/StudyMaterialManagerView';
 import {
   Users,
   Radio,
@@ -1143,55 +1144,10 @@ export const FacultyPanel: React.FC = () => {
       )}
 
       {/* ========================================================================= */}
-      {/* TAB 10: STUDY MATERIALS (8 TYPES) */}
+      {/* TAB 10: 28. STUDY MATERIAL MANAGEMENT (8 TYPES: PDF, Notes, Books, Assignments, Question Banks, PYQs, Revision, Practice Papers) */}
       {/* ========================================================================= */}
       {activeTab === 'study_materials' && (
-        <div className="space-y-4 text-xs">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
-              Study Material Repository ({studyMaterials.length} Items)
-            </h3>
-            <button
-              onClick={() => setShowUploadMaterialModal(true)}
-              className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl transition cursor-pointer flex items-center gap-1.5 shadow-sm"
-            >
-              <BookOpen className="w-3.5 h-3.5" /> + Upload Notes & Resources
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {studyMaterials.map((mat) => (
-              <div key={mat.id} className="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs space-y-3 flex flex-col justify-between">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase bg-amber-50 text-amber-800 px-2 py-0.5 rounded border border-amber-200">
-                      {mat.type} • {mat.category}
-                    </span>
-                    <span className="text-[10px] font-mono text-slate-400">{mat.fileSize}</span>
-                  </div>
-
-                  <h4 className="font-bold text-sm text-slate-900 line-clamp-2">{mat.title}</h4>
-                  <p className="text-[11px] text-slate-500">Subject: {mat.subject}</p>
-
-                  <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
-                    <span className="text-[10px] text-slate-500">{mat.pagesCount} Pages</span>
-                    <span className="text-[10px] font-bold text-emerald-700">{mat.downloadsCount} Downloads</span>
-                  </div>
-                </div>
-
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-[10px] text-indigo-700 font-bold">Dynamic Watermark Active</span>
-                  <button
-                    onClick={() => alert(`Downloading "${mat.title}"`)}
-                    className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl cursor-pointer flex items-center gap-1"
-                  >
-                    <Download className="w-3.5 h-3.5" /> Download
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <StudyMaterialManagerView />
       )}
 
       {/* ========================================================================= */}

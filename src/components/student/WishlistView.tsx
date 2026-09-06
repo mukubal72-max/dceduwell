@@ -207,7 +207,7 @@ export const WishlistView: React.FC = () => {
           </p>
           <button
             id="explore-catalog-from-wishlist-btn"
-            onClick={() => setView('courses')}
+            onClick={() => setView('website')}
             className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer shadow-xs inline-flex items-center gap-2"
           >
             <BookOpen className="w-4 h-4" />

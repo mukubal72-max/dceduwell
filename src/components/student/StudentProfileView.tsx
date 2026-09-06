@@ -67,7 +67,7 @@ export const StudentProfileView: React.FC = () => {
   const wishlistCourses = courses.filter((c) => currentUser.wishlistCourseIds?.includes(c.id) || ['crs-upsc-samarth', 'crs-tech-ai'].includes(c.id));
 
   // Mock Orders History if not in user
-  const ordersList: OrderItem[] = currentUser.orders || [
+  const ordersList: any[] = currentUser.orders || [
     {
       id: 'ord-90412',
       orderNumber: 'VED-ORD-2026-90412',

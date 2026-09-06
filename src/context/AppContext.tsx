@@ -121,6 +121,10 @@ interface AppContextType {
   setTestSeries: React.Dispatch<React.SetStateAction<TestSeriesExam[]>>;
   testResults: TestAttemptResult[];
   studyMaterials: StudyMaterialItem[];
+  setStudyMaterials: React.Dispatch<React.SetStateAction<StudyMaterialItem[]>>;
+  uploadStudyMaterial: (material: Omit<StudyMaterialItem, 'id'> | StudyMaterialItem) => void;
+  updateStudyMaterial: (material: StudyMaterialItem) => void;
+  deleteStudyMaterial: (id: string) => void;
   doubts: DoubtItem[];
   assignments: AssignmentItem[];
   leads: LeadItem[];
@@ -345,6 +349,23 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
+// Safe JSON parser to prevent white screen crashes in production (e.g. on Vercel/Netlify)
+function safeJsonParse<T>(key: string, fallback: T): T {
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return fallback;
+    }
+    const saved = localStorage.getItem(key);
+    if (!saved || saved === 'undefined' || saved === 'null') {
+      return fallback;
+    }
+    return JSON.parse(saved) as T;
+  } catch (e) {
+    console.warn(`Safe storage parse fallback for key "${key}":`, e);
+    return fallback;
+  }
+}
+
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentView, setView] = useState<AppPlatformView>('website');
   const [currentRole, setRole] = useState<UserRole>('student');
@@ -368,196 +389,99 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [allUsers] = useState<UserProfile[]>(ALL_USERS_DATA);
 
-  const [courses, setCourses] = useState<Course[]>(() => {
-    try {
-      const saved = localStorage.getItem('dcmaxwell_courses');
-      return saved ? JSON.parse(saved) : COURSES_DATA;
-    } catch (e) {
-      return COURSES_DATA;
-    }
-  });
+  const [courses, setCourses] = useState<Course[]>(() => safeJsonParse('dcmaxwell_courses', COURSES_DATA));
+  const [liveClasses, setLiveClasses] = useState<LiveClass[]>(() => safeJsonParse('dcmaxwell_live_classes', LIVE_CLASSES_DATA));
+  const [liveRecordings, setLiveRecordings] = useState<LiveClass[]>(() => safeJsonParse('dcmaxwell_recordings', LIVE_RECORDINGS_DATA));
+  const [attendanceRecords, setAttendanceRecords] = useState<LiveClassAttendanceRecord[]>(() => safeJsonParse('dcmaxwell_attendance', ATTENDANCE_RECORDS_DATA));
+  const [liveReminders, setLiveReminders] = useState<LiveClassReminder[]>(() => safeJsonParse('dcmaxwell_reminders', LIVE_REMINDERS_DATA));
+  const [questionBank, setQuestionBank] = useState<Question[]>(() => safeJsonParse('dcmaxwell_question_bank', QUESTION_BANK_DATA));
+  const [testSeries, setTestSeries] = useState<TestSeriesExam[]>(() => safeJsonParse('dcmaxwell_tests', TEST_SERIES_DATA));
+  const [testResults, setTestResults] = useState<TestAttemptResult[]>(() => safeJsonParse('dcmaxwell_test_results', DEFAULT_TEST_RESULTS));
+  const [studyMaterials, setStudyMaterials] = useState<StudyMaterialItem[]>(() => safeJsonParse('dcmaxwell_study_materials', STUDY_MATERIALS_DATA));
 
-  const [liveClasses, setLiveClasses] = useState<LiveClass[]>(() => {
-    try {
-      const saved = localStorage.getItem('dcmaxwell_live_classes');
-      return saved ? JSON.parse(saved) : LIVE_CLASSES_DATA;
-    } catch (e) {
-      return LIVE_CLASSES_DATA;
-    }
-  });
+  const uploadStudyMaterial = (material: Omit<StudyMaterialItem, 'id'> | StudyMaterialItem) => {
+    const newMat: StudyMaterialItem = {
+      ...material,
+      id: ('id' in material && material.id) ? material.id : `mat-${Date.now()}`,
+      downloadsCount: ('downloadsCount' in material && material.downloadsCount !== undefined) ? material.downloadsCount : 0,
+      viewsCount: ('viewsCount' in material && material.viewsCount !== undefined) ? material.viewsCount : 0,
+      updatedDate: ('updatedDate' in material && material.updatedDate) ? material.updatedDate : 'Just now'
+    };
+    setStudyMaterials(prev => {
+      const updated = [newMat, ...prev];
+      localStorage.setItem('dcmaxwell_study_materials', JSON.stringify(updated));
+      return updated;
+    });
+  };
 
-  const [liveRecordings, setLiveRecordings] = useState<LiveClass[]>(() => {
-    try {
-      const saved = localStorage.getItem('dcmaxwell_recordings');
-      return saved ? JSON.parse(saved) : LIVE_RECORDINGS_DATA;
-    } catch (e) {
-      return LIVE_RECORDINGS_DATA;
-    }
-  });
+  const updateStudyMaterial = (updatedMaterial: StudyMaterialItem) => {
+    setStudyMaterials(prev => {
+      const updated = prev.map(m => m.id === updatedMaterial.id ? updatedMaterial : m);
+      localStorage.setItem('dcmaxwell_study_materials', JSON.stringify(updated));
+      return updated;
+    });
+  };
 
-  const [attendanceRecords, setAttendanceRecords] = useState<LiveClassAttendanceRecord[]>(() => {
-    try {
-      const saved = localStorage.getItem('dcmaxwell_attendance');
-      return saved ? JSON.parse(saved) : ATTENDANCE_RECORDS_DATA;
-    } catch (e) {
-      return ATTENDANCE_RECORDS_DATA;
-    }
-  });
+  const deleteStudyMaterial = (id: string) => {
+    setStudyMaterials(prev => {
+      const updated = prev.filter(m => m.id !== id);
+      localStorage.setItem('dcmaxwell_study_materials', JSON.stringify(updated));
+      return updated;
+    });
+  };
 
-  const [liveReminders, setLiveReminders] = useState<LiveClassReminder[]>(() => {
-    try {
-      const saved = localStorage.getItem('dcmaxwell_reminders');
-      return saved ? JSON.parse(saved) : LIVE_REMINDERS_DATA;
-    } catch (e) {
-      return LIVE_REMINDERS_DATA;
-    }
-  });
-
-  const [questionBank, setQuestionBank] = useState<Question[]>(() => {
-    try {
-      const saved = localStorage.getItem('dcmaxwell_question_bank');
-      return saved ? JSON.parse(saved) : QUESTION_BANK_DATA;
-    } catch (e) {
-      return QUESTION_BANK_DATA;
-    }
-  });
-
-  const [testSeries, setTestSeries] = useState<TestSeriesExam[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_tests');
-    return saved ? JSON.parse(saved) : TEST_SERIES_DATA;
-  });
-
-  const [testResults, setTestResults] = useState<TestAttemptResult[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_test_results');
-    return saved ? JSON.parse(saved) : DEFAULT_TEST_RESULTS;
-  });
-
-  const [studyMaterials] = useState<StudyMaterialItem[]>(STUDY_MATERIALS_DATA);
-
-  const [doubts, setDoubts] = useState<DoubtItem[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_doubts');
-    return saved ? JSON.parse(saved) : DOUBTS_DATA;
-  });
-
-  const [assignments, setAssignments] = useState<AssignmentItem[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_assignments');
-    return saved ? JSON.parse(saved) : ASSIGNMENTS_DATA;
-  });
-
-  const [leads, setLeads] = useState<LeadItem[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_leads');
-    return saved ? JSON.parse(saved) : CRM_LEADS_DATA;
-  });
-
-  const [batches, setBatches] = useState<AcademicBatch[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_academic_batches');
-    return saved ? JSON.parse(saved) : DEFAULT_ACADEMIC_BATCHES;
-  });
+  const [doubts, setDoubts] = useState<DoubtItem[]>(() => safeJsonParse('dcmaxwell_doubts', DOUBTS_DATA));
+  const [assignments, setAssignments] = useState<AssignmentItem[]>(() => safeJsonParse('dcmaxwell_assignments', ASSIGNMENTS_DATA));
+  const [leads, setLeads] = useState<LeadItem[]>(() => safeJsonParse('dcmaxwell_leads', CRM_LEADS_DATA));
+  const [batches, setBatches] = useState<AcademicBatch[]>(() => safeJsonParse('dcmaxwell_academic_batches', DEFAULT_ACADEMIC_BATCHES));
 
   useEffect(() => {
-    localStorage.setItem('dcmaxwell_academic_batches', JSON.stringify(batches));
+    try {
+      localStorage.setItem('dcmaxwell_academic_batches', JSON.stringify(batches));
+    } catch (e) {
+      console.warn(e);
+    }
   }, [batches]);
 
-  const [supportTickets, setSupportTickets] = useState<SupportTicket[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_support_tickets');
-    return saved ? JSON.parse(saved) : DEFAULT_SUPPORT_TICKETS;
-  });
+  const [supportTickets, setSupportTickets] = useState<SupportTicket[]>(() => safeJsonParse('dcmaxwell_support_tickets', DEFAULT_SUPPORT_TICKETS));
 
   useEffect(() => {
-    localStorage.setItem('dcmaxwell_support_tickets', JSON.stringify(supportTickets));
+    try {
+      localStorage.setItem('dcmaxwell_support_tickets', JSON.stringify(supportTickets));
+    } catch (e) {
+      console.warn(e);
+    }
   }, [supportTickets]);
 
-  const [storeProducts, setStoreProducts] = useState<StoreProduct[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_store_products');
-    return saved ? JSON.parse(saved) : STORE_PRODUCTS_DATA;
-  });
-
-  const [orders, setOrders] = useState<OrderItem[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_orders');
-    return saved ? JSON.parse(saved) : ORDERS_DATA;
-  });
-
-  const [invoices, setInvoices] = useState<{ [invoiceNumber: string]: InvoiceItem }>(() => {
-    const saved = localStorage.getItem('dcmaxwell_invoices');
-    return saved ? JSON.parse(saved) : SAMPLE_INVOICES_DATA;
-  });
-
-  const [certificates, setCertificates] = useState<CertificateItem[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_certificates');
-    return saved ? JSON.parse(saved) : CERTIFICATES_DATA;
-  });
-
-  const [notifications, setNotifications] = useState<PlatformNotification[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_notifications');
-    return saved ? JSON.parse(saved) : NOTIFICATIONS_DATA;
-  });
+  const [storeProducts, setStoreProducts] = useState<StoreProduct[]>(() => safeJsonParse('dcmaxwell_store_products', STORE_PRODUCTS_DATA));
+  const [orders, setOrders] = useState<OrderItem[]>(() => safeJsonParse('dcmaxwell_orders', ORDERS_DATA));
+  const [invoices, setInvoices] = useState<{ [invoiceNumber: string]: InvoiceItem }>(() => safeJsonParse('dcmaxwell_invoices', SAMPLE_INVOICES_DATA));
+  const [certificates, setCertificates] = useState<CertificateItem[]>(() => safeJsonParse('dcmaxwell_certificates', CERTIFICATES_DATA));
+  const [notifications, setNotifications] = useState<PlatformNotification[]>(() => safeJsonParse('dcmaxwell_notifications', NOTIFICATIONS_DATA));
 
   const [cart, setCart] = useState<CartItem[]>([]);
 
   // 1. Coupon System State
-  const [coupons, setCoupons] = useState<Coupon[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_coupons');
-    return saved ? JSON.parse(saved) : COUPONS_DATA;
-  });
+  const [coupons, setCoupons] = useState<Coupon[]>(() => safeJsonParse('dcmaxwell_coupons', COUPONS_DATA));
 
   // 2. Combo Package System State
-  const [comboPackages, setComboPackages] = useState<ComboPackage[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_combo_packages');
-    return saved ? JSON.parse(saved) : COMBO_PACKAGES_DATA;
-  });
+  const [comboPackages, setComboPackages] = useState<ComboPackage[]>(() => safeJsonParse('dcmaxwell_combo_packages', COMBO_PACKAGES_DATA));
 
   // 3. Subscription Plans System State
-  const [subscriptionPlans, setSubscriptionPlans] = useState<SubscriptionPlan[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_subscription_plans');
-    return saved ? JSON.parse(saved) : SUBSCRIPTION_PLANS_DATA;
-  });
+  const [subscriptionPlans, setSubscriptionPlans] = useState<SubscriptionPlan[]>(() => safeJsonParse('dcmaxwell_subscription_plans', SUBSCRIPTION_PLANS_DATA));
 
   // 4. Wishlist & Remarketing State
-  const [wishlistLeads, setWishlistLeads] = useState<WishlistLead[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_wishlist_leads');
-    return saved ? JSON.parse(saved) : WISHLIST_LEADS_DATA;
-  });
-
-  const [remarketingCampaigns, setRemarketingCampaigns] = useState<RemarketingCampaign[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_remarketing_campaigns');
-    return saved ? JSON.parse(saved) : REMARKETING_CAMPAIGNS_DATA;
-  });
+  const [wishlistLeads, setWishlistLeads] = useState<WishlistLead[]>(() => safeJsonParse('dcmaxwell_wishlist_leads', WISHLIST_LEADS_DATA));
+  const [remarketingCampaigns, setRemarketingCampaigns] = useState<RemarketingCampaign[]>(() => safeJsonParse('dcmaxwell_remarketing_campaigns', REMARKETING_CAMPAIGNS_DATA));
 
   // 5. Content Management System (CMS) State
-  const [adminVideos, setAdminVideos] = useState<AdminVideoItem[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_cms_videos');
-    return saved ? JSON.parse(saved) : DEFAULT_ADMIN_VIDEOS;
-  });
-
-  const [adminPdfs, setAdminPdfs] = useState<AdminPdfItem[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_cms_pdfs');
-    return saved ? JSON.parse(saved) : DEFAULT_ADMIN_PDFS;
-  });
-
-  const [adminNotes, setAdminNotes] = useState<AdminNotesItem[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_cms_notes');
-    return saved ? JSON.parse(saved) : DEFAULT_ADMIN_NOTES;
-  });
-
-  const [adminAnnouncements, setAdminAnnouncements] = useState<AdminAnnouncementItem[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_cms_announcements');
-    return saved ? JSON.parse(saved) : DEFAULT_ADMIN_ANNOUNCEMENTS;
-  });
-
-  const [adminBlogs, setAdminBlogs] = useState<AdminBlogItem[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_cms_blogs');
-    return saved ? JSON.parse(saved) : DEFAULT_ADMIN_BLOGS;
-  });
-
-  const [adminBanners, setAdminBanners] = useState<AdminBannerItem[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_cms_banners');
-    return saved ? JSON.parse(saved) : DEFAULT_ADMIN_BANNERS;
-  });
-
-  const [adminFaqs, setAdminFaqs] = useState<AdminFaqItem[]>(() => {
-    const saved = localStorage.getItem('dcmaxwell_cms_faqs');
-    return saved ? JSON.parse(saved) : DEFAULT_ADMIN_FAQS;
-  });
+  const [adminVideos, setAdminVideos] = useState<AdminVideoItem[]>(() => safeJsonParse('dcmaxwell_cms_videos', DEFAULT_ADMIN_VIDEOS));
+  const [adminPdfs, setAdminPdfs] = useState<AdminPdfItem[]>(() => safeJsonParse('dcmaxwell_cms_pdfs', DEFAULT_ADMIN_PDFS));
+  const [adminNotes, setAdminNotes] = useState<AdminNotesItem[]>(() => safeJsonParse('dcmaxwell_cms_notes', DEFAULT_ADMIN_NOTES));
+  const [adminAnnouncements, setAdminAnnouncements] = useState<AdminAnnouncementItem[]>(() => safeJsonParse('dcmaxwell_cms_announcements', DEFAULT_ADMIN_ANNOUNCEMENTS));
+  const [adminBlogs, setAdminBlogs] = useState<AdminBlogItem[]>(() => safeJsonParse('dcmaxwell_cms_blogs', DEFAULT_ADMIN_BLOGS));
+  const [adminBanners, setAdminBanners] = useState<AdminBannerItem[]>(() => safeJsonParse('dcmaxwell_cms_banners', DEFAULT_ADMIN_BANNERS));
+  const [adminFaqs, setAdminFaqs] = useState<AdminFaqItem[]>(() => safeJsonParse('dcmaxwell_cms_faqs', DEFAULT_ADMIN_FAQS));
 
   // Navigation targets & Modals
   const [selectedCourseForDetail, setSelectedCourseForDetail] = useState<Course | null>(null);
@@ -2523,6 +2447,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setTestSeries,
         testResults,
         studyMaterials,
+        setStudyMaterials,
+        uploadStudyMaterial,
+        updateStudyMaterial,
+        deleteStudyMaterial,
         doubts,
         assignments,
         leads,

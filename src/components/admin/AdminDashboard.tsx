@@ -9,6 +9,7 @@ import { WishlistMarketingView } from './WishlistMarketingView';
 import { NotificationBroadcastView } from './NotificationBroadcastView';
 import { CourseAdministrationView } from './CourseAdministrationView';
 import { ContentManagerView } from './ContentManagerView';
+import { StudyMaterialManagerView } from './StudyMaterialManagerView';
 import { BatchManagerView } from './BatchManagerView';
 import { SupportTicketsView } from '../common/SupportTicketsView';
 import { CounsellorPanel } from '../counsellor/CounsellorPanel';
@@ -94,7 +95,7 @@ export const AdminDashboard: React.FC = () => {
   } = useApp();
 
   const [activeTab, setActiveTab] = useState<
-    'analytics' | 'cms' | 'batches' | 'courses' | 'combos' | 'subscriptions' | 'coupons' | 'orders' | 'wishlist_crm' | 'notification_broadcast' | 'live_classes' | 'question_bank' | 'tests' | 'content_security' | 'students' | 'crm' | 'support_tickets'
+    'analytics' | 'study_materials' | 'cms' | 'batches' | 'courses' | 'combos' | 'subscriptions' | 'coupons' | 'orders' | 'wishlist_crm' | 'notification_broadcast' | 'live_classes' | 'question_bank' | 'tests' | 'content_security' | 'students' | 'crm' | 'support_tickets'
   >('analytics');
 
   // Course batch creation modal state
@@ -398,6 +399,7 @@ export const AdminDashboard: React.FC = () => {
       <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-1.5 overflow-x-auto text-xs font-bold">
         {[
           { id: 'analytics', label: 'Executive Analytics', icon: <TrendingUp className="w-3.5 h-3.5" /> },
+          { id: 'study_materials', label: `Study Material Management (${studyMaterials.length})`, icon: <BookOpen className="w-3.5 h-3.5 text-amber-500" /> },
           { id: 'cms', label: 'Content Management (CMS)', icon: <FileText className="w-3.5 h-3.5 text-amber-500" /> },
           { id: 'batches', label: 'Academic Batches (7 Modules)', icon: <FolderKanban className="w-3.5 h-3.5 text-indigo-600" /> },
           { id: 'courses', label: 'Course Batches', icon: <BookOpen className="w-3.5 h-3.5" /> },
@@ -1426,6 +1428,11 @@ export const AdminDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* 28. STUDY MATERIAL MANAGEMENT TAB */}
+      {activeTab === 'study_materials' && (
+        <StudyMaterialManagerView />
       )}
 
       {/* CONTENT MANAGEMENT SYSTEM (CMS) TAB */}

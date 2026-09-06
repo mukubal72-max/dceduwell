@@ -22,6 +22,7 @@ export type CourseCategory =
   | 'NEET (Medical)' 
   | 'UPSC & Civil Services' 
   | 'CA & Commerce (Foundation/Inter)'
+  | 'CA Foundation'
   | 'Class 11-12 Boards' 
   | 'Foundation (9-10th)' 
   | 'Tech & Data Science';
@@ -285,8 +286,11 @@ export interface LiveQaItem {
 export interface LivePollItem {
   id: string;
   question: string;
-  options: { text: string; votes: number; voteCount?: number }[];
+  questionText?: string;
+  options: { id?: string; text: string; votes: number; voteCount?: number }[];
   active: boolean;
+  isActive?: boolean;
+  correctOptionId?: string;
   timerSeconds: number;
   createdBy: string;
   userVotedOption?: number;
@@ -566,6 +570,7 @@ export interface InvoiceItem {
   paymentMethod: string;
   transactionId?: string;
   paymentStatus?: 'PAID' | 'PENDING' | 'REFUNDED' | 'Paid';
+  status?: string;
   authorizedSignatory?: string;
   qrVerificationCode?: string;
 }
@@ -635,7 +640,7 @@ export interface CertificateItem {
 export interface CartItem {
   id?: string;
   product?: StoreProduct;
-  course?: Course;
+  course?: Course | any;
   productId?: string;
   title?: string;
   price?: number;
@@ -693,7 +698,7 @@ export interface PlatformNotification {
   message: string;
   type: PlatformNotificationType;
   category?: 'registration' | 'course_purchase' | 'course_activation' | 'new_video' | 'live_class' | 'test' | 'result' | 'assignment' | 'doubt_response' | 'certificate' | 'offers' | 'announcements';
-  time: string;
+  time?: string;
   timestamp?: string;
   read: boolean;
   linkAction?: string;
@@ -750,12 +755,13 @@ export interface WishlistLead {
 export interface RemarketingCampaign {
   id: string;
   campaignTitle: string;
+  title?: string;
   targetCourseId: string;
   targetCourseTitle: string;
   couponCode: string;
   discountPercentage: number;
   recipientsCount: number;
-  channels: ('in_app' | 'email' | 'whatsapp' | 'push')[];
+  channels: ('in_app' | 'email' | 'whatsapp' | 'push' | 'sms')[];
   status: 'sent' | 'scheduled' | 'draft';
   sentDate: string;
   clicksCount: number;

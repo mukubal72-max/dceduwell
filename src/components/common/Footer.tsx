@@ -174,12 +174,11 @@ export const Footer: React.FC = () => {
               <p className="font-semibold text-slate-800">
                 © 2026 DC Maxwell Academy Pvt. Ltd. All rights reserved.
               </p>
-              <p className="text-slate-500 font-medium flex items-center justify-center md:justify-start gap-1.5 flex-wrap">
-                <span>Designed, Developed & Maintained with precision by</span>
-                <span className="font-extrabold text-slate-900 bg-amber-200/70 text-slate-950 px-2 py-0.5 rounded-md border border-amber-300 shadow-2xs inline-flex items-center gap-1">
+              <p className="text-slate-700 font-semibold flex items-center justify-center md:justify-start gap-1.5 flex-wrap">
+                <span className="font-extrabold text-slate-950 bg-amber-200/90 text-slate-950 px-2 py-0.5 rounded-md border border-amber-300 shadow-xs inline-flex items-center gap-1">
                   Digital Communique
                 </span>
-                <span>• Copyright & Development © 2026 Digital Communique</span>
+                <span>• Digital Communique Copy Write and Development © 2026</span>
               </p>
             </div>
             
@@ -188,8 +187,8 @@ export const Footer: React.FC = () => {
               <span className="hover:text-slate-950 cursor-pointer transition">Privacy Policy</span>
               <span className="hover:text-slate-950 cursor-pointer transition">Honor Code & Security</span>
               <span className="hover:text-slate-950 cursor-pointer transition">Refund Policy</span>
-              <span className="text-amber-700 font-bold bg-amber-100/80 px-2.5 py-1 rounded-full border border-amber-300">
-                Digital Communique Certified
+              <span className="text-slate-950 font-bold bg-amber-300/80 px-3 py-1 rounded-full border border-amber-400 shadow-2xs">
+                Digital Communique Copy Write & Development
               </span>
             </div>
           </div>

@@ -525,66 +525,91 @@ export const CbtExamEngine: React.FC = () => {
           </div>
         </div>
 
-        {/* 25. Result Scorecard Grid: Total Marks, Obtained Marks, Percentage, Correct, Wrong, Unattempted, Accuracy, Time, Rank, Percentile */}
+        {/* RESULT SYSTEM: 10 Core Metrics (Total Marks, Obtained Marks, Percentage, Correct Answers, Wrong Answers, Unattempted, Accuracy, Time Taken, Rank, Percentile) */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
           
-          {/* 1. All-India Rank */}
-          <div className="p-5 rounded-3xl bg-gradient-to-br from-amber-500/15 via-amber-500/5 to-white border border-amber-300 shadow-xs space-y-1">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-amber-900 uppercase tracking-wider">All-India Rank</span>
-              <Award className="w-5 h-5 text-amber-600" />
-            </div>
-            <div className="text-3xl font-black text-slate-900 font-serif">AIR {activeTestResult.airRank}</div>
-            <p className="text-[11px] text-slate-500">Out of {activeTestResult.totalCandidates?.toLocaleString() || '3,140'} Aspirants</p>
+          {/* 1. Total Marks */}
+          <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-1">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400">Total Marks</span>
+            <div className="text-2xl sm:text-3xl font-black text-slate-800 font-serif">{activeTestResult.maxScore}</div>
+            <p className="text-[11px] text-slate-500">Maximum Exam Marks</p>
           </div>
 
-          {/* 2. Obtained & Total Marks */}
-          <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-1">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Obtained Marks</span>
-              <BarChart3 className="w-5 h-5 text-indigo-600" />
+          {/* 2. Obtained Marks */}
+          <div className="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-200 shadow-xs space-y-1">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-indigo-700">Obtained Marks</span>
+            <div className="text-2xl sm:text-3xl font-black text-indigo-950 font-serif">
+              {activeTestResult.totalScore}
             </div>
-            <div className="text-3xl font-black text-indigo-950 font-serif">
-              {activeTestResult.totalScore} <span className="text-sm text-slate-400 font-sans">/ {activeTestResult.maxScore}</span>
-            </div>
-            <p className="text-[11px] text-indigo-600 font-bold">{activeTestResult.percentage}% Score Rate</p>
+            <p className="text-[11px] text-indigo-600 font-bold">Net Score Earned</p>
           </div>
 
-          {/* 3. Percentile */}
-          <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-1">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">NTA Percentile</span>
-              <Sparkles className="w-5 h-5 text-purple-600" />
-            </div>
-            <div className="text-3xl font-black text-purple-950 font-serif">{activeTestResult.percentile}%ile</div>
-            <p className="text-[11px] text-purple-700 font-semibold">National 99th Percentile</p>
-          </div>
-
-          {/* 4. Accuracy & Question Breakdown */}
-          <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-1">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Accuracy</span>
-              <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-            </div>
-            <div className="text-3xl font-black text-emerald-700 font-serif">{activeTestResult.accuracy}%</div>
-            <p className="text-[11px] text-slate-500">
-              <span className="text-emerald-700 font-bold">{activeTestResult.correctAnswersCount} Correct</span> • <span className="text-rose-600 font-bold">{activeTestResult.incorrectAnswersCount} Wrong</span>
+          {/* 3. Percentage */}
+          <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-1">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400">Percentage</span>
+            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-serif">{activeTestResult.percentage}%</div>
+            <p className="text-[11px] text-emerald-600 font-bold">
+              {activeTestResult.percentage >= 40 ? 'Qualified' : 'Needs Review'}
             </p>
           </div>
 
-          {/* 5. Time Taken & Unattempted */}
-          <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-1 col-span-2 sm:col-span-1">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Time Taken</span>
-              <Clock className="w-5 h-5 text-blue-600" />
+          {/* 4. Correct Answers */}
+          <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 shadow-xs space-y-1">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-emerald-800">Correct Answers</span>
+            <div className="text-2xl sm:text-3xl font-black text-emerald-700 font-serif">
+              {activeTestResult.correctAnswersCount}
             </div>
-            <div className="text-2xl sm:text-3xl font-black text-blue-950 font-serif">
+            <p className="text-[11px] text-emerald-700 font-semibold">Positive Scoring</p>
+          </div>
+
+          {/* 5. Wrong Answers */}
+          <div className="p-4 rounded-2xl bg-rose-50/70 border border-rose-200 shadow-xs space-y-1">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-rose-800">Wrong Answers</span>
+            <div className="text-2xl sm:text-3xl font-black text-rose-700 font-serif">
+              {activeTestResult.incorrectAnswersCount}
+            </div>
+            <p className="text-[11px] text-rose-600 font-semibold">Negative Deductions</p>
+          </div>
+
+          {/* 6. Unattempted */}
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 shadow-xs space-y-1">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400">Unattempted</span>
+            <div className="text-2xl sm:text-3xl font-black text-slate-700 font-serif">
+              {activeTestResult.unattemptedCount}
+            </div>
+            <p className="text-[11px] text-slate-400">Skipped Questions</p>
+          </div>
+
+          {/* 7. Accuracy */}
+          <div className="p-4 rounded-2xl bg-teal-50/70 border border-teal-200 shadow-xs space-y-1">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-teal-800">Accuracy</span>
+            <div className="text-2xl sm:text-3xl font-black text-teal-700 font-serif">{activeTestResult.accuracy}%</div>
+            <p className="text-[11px] text-teal-600 font-semibold">Precision Ratio</p>
+          </div>
+
+          {/* 8. Time Taken */}
+          <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200 shadow-xs space-y-1">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-blue-800">Time Taken</span>
+            <div className="text-xl sm:text-2xl font-black text-blue-950 font-serif">
               {Math.floor(activeTestResult.timeSpentSeconds / 60)}m {activeTestResult.timeSpentSeconds % 60}s
             </div>
-            <p className="text-[11px] text-slate-500">
-              {activeTestResult.unattemptedCount} Unattempted Questions
-            </p>
+            <p className="text-[11px] text-blue-600 font-semibold">Exam Duration</p>
           </div>
+
+          {/* 9. Rank */}
+          <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-300 shadow-xs space-y-1">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-amber-900">Rank</span>
+            <div className="text-2xl sm:text-3xl font-black text-amber-800 font-serif">AIR {activeTestResult.airRank}</div>
+            <p className="text-[11px] text-slate-500">Out of {activeTestResult.totalCandidates?.toLocaleString() || '3,140'}</p>
+          </div>
+
+          {/* 10. Percentile */}
+          <div className="p-4 rounded-2xl bg-purple-50/70 border border-purple-200 shadow-xs space-y-1">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-purple-800">Percentile</span>
+            <div className="text-2xl sm:text-3xl font-black text-purple-950 font-serif">{activeTestResult.percentile}%ile</div>
+            <p className="text-[11px] text-purple-700 font-semibold">National Stance</p>
+          </div>
+
         </div>
 
         {/* 26. DETAILED ANSWER ANALYSIS WITH VIDEO & PDF SOLUTIONS */}
@@ -656,9 +681,65 @@ export const CbtExamEngine: React.FC = () => {
                         </div>
 
                         {/* Question Statement */}
-                        <p className="text-sm text-slate-900 font-medium leading-relaxed">
-                          {q.questionText}
-                        </p>
+                        <div className="space-y-2">
+                          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Question</span>
+                          <p className="text-sm text-slate-900 font-medium leading-relaxed">
+                            {q.questionText}
+                          </p>
+                        </div>
+
+                        {/* Explicit Student Answer vs Correct Answer Summary */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className={`p-3.5 rounded-2xl border text-xs space-y-1.5 ${
+                            isCorrect 
+                              ? 'bg-emerald-50/80 border-emerald-300 text-emerald-950'
+                              : isAttempted 
+                              ? 'bg-rose-50/80 border-rose-300 text-rose-950'
+                              : 'bg-slate-50 border-slate-200 text-slate-700'
+                          }`}>
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold uppercase tracking-wider text-[10px] text-slate-500">Student Answer</span>
+                              {isCorrect ? (
+                                <span className="text-[10px] font-black bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                  <Check className="w-3 h-3" /> Correct (+{q.marks})
+                                </span>
+                              ) : isAttempted ? (
+                                <span className="text-[10px] font-black bg-rose-200 text-rose-900 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                  <X className="w-3 h-3" /> Wrong (-{q.negativeMarks})
+                                </span>
+                              ) : (
+                                <span className="text-[10px] font-bold bg-slate-200 text-slate-700 px-2 py-0.5 rounded-md">
+                                  Unattempted (0 Marks)
+                                </span>
+                              )}
+                            </div>
+                            <div className="font-semibold text-xs text-slate-800">
+                              {q.options && typeof userAns === 'number' && q.options[userAns] ? (
+                                <span><strong>Option {String.fromCharCode(65 + userAns)}:</strong> {q.options[userAns]}</span>
+                              ) : userAns !== undefined && userAns !== null ? (
+                                <span className="font-mono">{String(userAns)}</span>
+                              ) : (
+                                <span className="text-slate-400 italic">Not attempted by student</span>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="p-3.5 rounded-2xl border border-emerald-300 bg-emerald-50/70 text-xs space-y-1.5 text-emerald-950">
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold uppercase tracking-wider text-[10px] text-emerald-800">Correct Answer</span>
+                              <span className="text-[10px] font-black bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                <Check className="w-3 h-3" /> Official Answer Key
+                              </span>
+                            </div>
+                            <div className="font-semibold text-xs text-slate-900">
+                              {q.options && typeof q.correctAnswer === 'number' && q.options[q.correctAnswer] ? (
+                                <span><strong>Option {String.fromCharCode(65 + q.correctAnswer)}:</strong> {q.options[q.correctAnswer]}</span>
+                              ) : (
+                                <span className="font-mono">{String(q.correctAnswer)} {q.numericalUnits || ''}</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
 
                         {/* Option Evaluation for MCQ / Multiple Choice */}
                         {q.options && (
