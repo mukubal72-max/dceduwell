@@ -12,6 +12,7 @@ import { StudentProfileView } from './StudentProfileView';
 import { CourseStoreView } from './CourseStoreView';
 import { SubscriptionStoreView } from './SubscriptionStoreView';
 import { WishlistView } from './WishlistView';
+import { SupportTicketsView } from '../common/SupportTicketsView';
 import {
   BookOpen,
   Radio,
@@ -31,7 +32,8 @@ import {
   BarChart3,
   ShoppingBag,
   Crown,
-  Heart
+  Heart,
+  LifeBuoy
 } from 'lucide-react';
 
 export const StudentDashboard: React.FC = () => {
@@ -64,6 +66,7 @@ export const StudentDashboard: React.FC = () => {
     | 'assignments'
     | 'certificates'
     | 'profile'
+    | 'tickets'
   >('overview');
 
   // Enrolled courses
@@ -100,7 +103,8 @@ export const StudentDashboard: React.FC = () => {
           { id: 'doubts', label: 'Ask Doubt & Faculty Desk', icon: <HelpCircle className="w-3.5 h-3.5 text-purple-600" /> },
           { id: 'analytics', label: 'Performance Analytics', icon: <BarChart3 className="w-3.5 h-3.5 text-cyan-600" /> },
           { id: 'certificates', label: 'Certificates', icon: <Award className="w-3.5 h-3.5 text-amber-500" /> },
-          { id: 'profile', label: 'Student Profile & Progress', icon: <User className="w-3.5 h-3.5 text-blue-600" /> }
+          { id: 'profile', label: 'Student Profile & Progress', icon: <User className="w-3.5 h-3.5 text-blue-600" /> },
+          { id: 'tickets', label: 'Support & Helpdesk', icon: <LifeBuoy className="w-3.5 h-3.5 text-rose-500" /> }
         ].map((tab) => (
           <button
             key={tab.id}
@@ -118,7 +122,9 @@ export const StudentDashboard: React.FC = () => {
       </div>
 
       {/* View routing based on studentNav */}
-      {studentNav === 'store' ? (
+      {studentNav === 'tickets' ? (
+        <SupportTicketsView mode="student" />
+      ) : studentNav === 'store' ? (
         <CourseStoreView />
       ) : studentNav === 'subscriptions' ? (
         <SubscriptionStoreView />

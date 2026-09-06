@@ -32,6 +32,7 @@ export interface Lesson {
   id: string;
   title: string;
   durationMinutes: number;
+  duration?: string;
   videoUrl: string;
   videoThumbnail?: string;
   isFreePreview: boolean;
@@ -45,6 +46,7 @@ export interface Lesson {
 export interface Chapter {
   id: string;
   title: string;
+  description?: string;
   subject: string;
   lessons: Lesson[];
 }
@@ -88,6 +90,7 @@ export interface Course {
   isPopular?: boolean;
   isTrending?: boolean;
   features: string[];
+  description?: string;
   chapters: Chapter[];
   includesTestSeries: boolean;
   includesHardcopyBooks: boolean;
@@ -108,6 +111,7 @@ export interface LiveClass {
   facultyAvatar: string;
   status: 'upcoming' | 'live' | 'completed';
   scheduledTime: string;
+  scheduledDate?: string;
   date?: string;
   startTime?: string;
   endTime?: string;
@@ -281,11 +285,13 @@ export interface LiveQaItem {
 export interface LivePollItem {
   id: string;
   question: string;
-  options: { text: string; votes: number }[];
+  options: { text: string; votes: number; voteCount?: number }[];
   active: boolean;
   timerSeconds: number;
   createdBy: string;
   userVotedOption?: number;
+  userVotedOptionId?: string;
+  totalVotes?: number;
 }
 
 export interface LiveHandRaiseItem {
@@ -453,6 +459,8 @@ export interface StoreProduct {
   instructor?: string;
   ratingCount?: number;
   description?: string;
+  tags?: string[];
+  image?: string;
   testSeriesIdRef?: string;
   materialIdRef?: string;
   isBestseller?: boolean;
@@ -490,6 +498,8 @@ export interface OrderItem {
   paymentStatus: OrderPaymentStatus;
   paymentMethod: PaymentMethodType | string;
   orderDate: string;
+  date?: string;
+  status?: string;
   transactionId: string;
   invoiceNumber: string;
   invoiceUrl?: string;
@@ -653,6 +663,9 @@ export interface UserProfile {
   orders?: OrderItem[];
   subscription?: UserSubscription;
   isPremiumMember?: boolean;
+  isSubscribed?: boolean;
+  membershipTier?: string;
+  subscriptionEndDate?: string;
 }
 
 export type PlatformNotificationType =
@@ -813,8 +826,11 @@ export interface ComboPackage {
   category: CourseCategory | string;
   targetExam?: string;
   price: number;
+  bundlePrice?: number;
   originalPrice: number;
+  originalTotalValue?: number;
   discountPercentage: number;
+  coursesIncluded?: string[];
   thumbnail?: string;
   bannerImage?: string;
   badge?: string;

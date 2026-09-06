@@ -168,14 +168,29 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Bottom copyright & app strip */}
-          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-600 text-[11px]">
-            <p>© 2026 DC Maxwell Academy Pvt. Ltd. All rights reserved.</p>
-            <div className="flex items-center gap-6">
-              <span className="hover:text-slate-950 cursor-pointer">Terms of Service</span>
-              <span className="hover:text-slate-950 cursor-pointer">Privacy Policy</span>
-              <span className="hover:text-slate-950 cursor-pointer">Honor Code & Security</span>
-              <span className="hover:text-slate-950 cursor-pointer">Refund Policy</span>
+          {/* Bottom copyright & development credits strip */}
+          <div className="pt-6 border-t border-slate-200/80 flex flex-col md:flex-row items-center justify-between gap-4 text-slate-600 text-[11px]">
+            <div className="space-y-1 text-center md:text-left">
+              <p className="font-semibold text-slate-800">
+                © 2026 DC Maxwell Academy Pvt. Ltd. All rights reserved.
+              </p>
+              <p className="text-slate-500 font-medium flex items-center justify-center md:justify-start gap-1.5 flex-wrap">
+                <span>Designed, Developed & Maintained with precision by</span>
+                <span className="font-extrabold text-slate-900 bg-amber-200/70 text-slate-950 px-2 py-0.5 rounded-md border border-amber-300 shadow-2xs inline-flex items-center gap-1">
+                  Digital Communique
+                </span>
+                <span>• Copyright & Development © 2026 Digital Communique</span>
+              </p>
+            </div>
+            
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-slate-600">
+              <span className="hover:text-slate-950 cursor-pointer transition">Terms of Service</span>
+              <span className="hover:text-slate-950 cursor-pointer transition">Privacy Policy</span>
+              <span className="hover:text-slate-950 cursor-pointer transition">Honor Code & Security</span>
+              <span className="hover:text-slate-950 cursor-pointer transition">Refund Policy</span>
+              <span className="text-amber-700 font-bold bg-amber-100/80 px-2.5 py-1 rounded-full border border-amber-300">
+                Digital Communique Certified
+              </span>
             </div>
           </div>
         </div>

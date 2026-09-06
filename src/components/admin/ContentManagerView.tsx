@@ -499,11 +499,15 @@ export const ContentManagerView: React.FC = () => {
             )}
             {activeTab === 'faqs' && (
               <>
+                <option value="Courses">Courses</option>
+                <option value="Payments">Payments</option>
+                <option value="Exams">Exams</option>
+                <option value="Refunds">Refunds</option>
+                <option value="Technical Support">Technical Support</option>
+                <option value="Account Issues">Account Issues</option>
                 <option value="Admissions & Batches">Admissions & Batches</option>
                 <option value="CBT Test Series">CBT Test Series</option>
                 <option value="Study Material & Notes">Study Material & Notes</option>
-                <option value="Technical & App Support">Technical & App Support</option>
-                <option value="Fees, Subscriptions & Refunds">Fees & Refunds</option>
               </>
             )}
           </select>
@@ -1866,11 +1870,15 @@ export const ContentManagerView: React.FC = () => {
                         onChange={e => setFaqForm({ ...faqForm, category: e.target.value as any })}
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"
                       >
+                        <option value="Courses">Courses</option>
+                        <option value="Payments">Payments</option>
+                        <option value="Exams">Exams</option>
+                        <option value="Refunds">Refunds</option>
+                        <option value="Technical Support">Technical Support</option>
+                        <option value="Account Issues">Account Issues</option>
                         <option value="Admissions & Batches">Admissions & Batches</option>
                         <option value="CBT Test Series">CBT Test Series</option>
                         <option value="Study Material & Notes">Study Material & Notes</option>
-                        <option value="Technical & App Support">Technical & App Support</option>
-                        <option value="Fees, Subscriptions & Refunds">Fees & Refunds</option>
                       </select>
                     </div>
                     <div className="space-y-1">

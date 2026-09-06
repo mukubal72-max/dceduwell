@@ -9,6 +9,9 @@ import { WishlistMarketingView } from './WishlistMarketingView';
 import { NotificationBroadcastView } from './NotificationBroadcastView';
 import { CourseAdministrationView } from './CourseAdministrationView';
 import { ContentManagerView } from './ContentManagerView';
+import { BatchManagerView } from './BatchManagerView';
+import { SupportTicketsView } from '../common/SupportTicketsView';
+import { CounsellorPanel } from '../counsellor/CounsellorPanel';
 import {
   Users,
   DollarSign,
@@ -52,7 +55,9 @@ import {
   X,
   ShoppingBag,
   Crown,
-  Heart
+  Heart,
+  LifeBuoy,
+  FolderKanban
 } from 'lucide-react';
 
 export const AdminDashboard: React.FC = () => {
@@ -63,6 +68,9 @@ export const AdminDashboard: React.FC = () => {
     setTestSeries,
     allUsers,
     leads,
+    updateLeadStage,
+    updateLeadDetails,
+    addLead,
     orders,
     doubts,
     liveClasses,
@@ -81,11 +89,12 @@ export const AdminDashboard: React.FC = () => {
     triggerReminderSimulation,
     attendanceRecords,
     liveRecordings,
-    publishLiveRecording
+    publishLiveRecording,
+    supportTickets
   } = useApp();
 
   const [activeTab, setActiveTab] = useState<
-    'analytics' | 'cms' | 'courses' | 'combos' | 'subscriptions' | 'coupons' | 'orders' | 'wishlist_crm' | 'notification_broadcast' | 'live_classes' | 'question_bank' | 'tests' | 'content_security' | 'students' | 'crm'
+    'analytics' | 'cms' | 'batches' | 'courses' | 'combos' | 'subscriptions' | 'coupons' | 'orders' | 'wishlist_crm' | 'notification_broadcast' | 'live_classes' | 'question_bank' | 'tests' | 'content_security' | 'students' | 'crm' | 'support_tickets'
   >('analytics');
 
   // Course batch creation modal state
@@ -390,6 +399,7 @@ export const AdminDashboard: React.FC = () => {
         {[
           { id: 'analytics', label: 'Executive Analytics', icon: <TrendingUp className="w-3.5 h-3.5" /> },
           { id: 'cms', label: 'Content Management (CMS)', icon: <FileText className="w-3.5 h-3.5 text-amber-500" /> },
+          { id: 'batches', label: 'Academic Batches (7 Modules)', icon: <FolderKanban className="w-3.5 h-3.5 text-indigo-600" /> },
           { id: 'courses', label: 'Course Batches', icon: <BookOpen className="w-3.5 h-3.5" /> },
           { id: 'combos', label: 'Combo Packages & Bundles', icon: <Layers className="w-3.5 h-3.5 text-indigo-600" /> },
           { id: 'subscriptions', label: 'VIP Subscriptions & Plans', icon: <Crown className="w-3.5 h-3.5 text-amber-500" /> },
@@ -402,7 +412,8 @@ export const AdminDashboard: React.FC = () => {
           { id: 'tests', label: `Test Series Engine (${testSeries.length})`, icon: <FileCheck className="w-3.5 h-3.5 text-emerald-600" /> },
           { id: 'content_security', label: 'Free/Paid & Video DRM Security', icon: <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> },
           { id: 'students', label: 'Student Directory & KYC', icon: <Users className="w-3.5 h-3.5" /> },
-          { id: 'crm', label: 'Admissions & CRM Funnel', icon: <DollarSign className="w-3.5 h-3.5" /> }
+          { id: 'crm', label: 'Admissions & CRM Funnel', icon: <DollarSign className="w-3.5 h-3.5" /> },
+          { id: 'support_tickets', label: `Support Tickets (${supportTickets.length})`, icon: <LifeBuoy className="w-3.5 h-3.5 text-rose-500" /> }
         ].map((tab) => (
           <button
             key={tab.id}
@@ -1422,6 +1433,11 @@ export const AdminDashboard: React.FC = () => {
         <ContentManagerView />
       )}
 
+      {/* ACADEMIC BATCHES (7 MODULES) TAB */}
+      {activeTab === 'batches' && (
+        <BatchManagerView />
+      )}
+
       {/* 6. COURSES & BATCHES ADMINISTRATION TAB */}
       {activeTab === 'courses' && (
         <CourseAdministrationView />
@@ -1471,43 +1487,12 @@ export const AdminDashboard: React.FC = () => {
 
       {/* 8. CRM TAB */}
       {activeTab === 'crm' && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="font-bold text-sm text-slate-900 font-serif">Incoming Student Enquiry & Admissions Pipeline</h3>
-            <span className="text-xs text-slate-500 font-medium">{leads?.length || 0} Leads in Funnel</span>
-          </div>
+        <CounsellorPanel />
+      )}
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-slate-200 text-slate-400 font-semibold uppercase">
-                  <th className="pb-3">Student Name</th>
-                  <th className="pb-3">Contact</th>
-                  <th className="pb-3">Target Exam</th>
-                  <th className="pb-3">Stage</th>
-                  <th className="pb-3">Counsellor</th>
-                  <th className="pb-3">Deal Value</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {leads.map(lead => (
-                  <tr key={lead.id} className="hover:bg-slate-50">
-                    <td className="py-3 font-bold text-slate-900">{lead.studentName}</td>
-                    <td className="py-3 text-slate-600">{lead.phone} • {lead.city}</td>
-                    <td className="py-3 font-semibold text-indigo-950">{lead.targetCourse}</td>
-                    <td className="py-3">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-50 text-indigo-900">
-                        {lead.stage}
-                      </span>
-                    </td>
-                    <td className="py-3 text-slate-600">{lead.counsellorName}</td>
-                    <td className="py-3 text-emerald-700 font-bold">₹{lead.dealValue.toLocaleString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+      {/* 9. SUPPORT TICKETS TAB */}
+      {activeTab === 'support_tickets' && (
+        <SupportTicketsView mode="admin" />
       )}
 
       {/* COMBO PACKAGES TAB */}
