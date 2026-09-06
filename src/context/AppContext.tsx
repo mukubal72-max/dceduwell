@@ -343,6 +343,13 @@ interface AppContextType {
   setIsCartOpen: (open: boolean) => void;
   isEnquiryModalOpen: boolean;
   setIsEnquiryModalOpen: (open: boolean) => void;
+  isAuthModalOpen: boolean;
+  setIsAuthModalOpen: (open: boolean) => void;
+  authModalMode: 'login' | 'register';
+  setAuthModalMode: (mode: 'login' | 'register') => void;
+  registerStudent: (details: Partial<UserProfile> & { password?: string }) => void;
+  loginStudent: (identifier: string, method?: 'otp' | 'password' | 'google') => boolean;
+  logoutStudent: () => void;
   mobileDevicePlatform: 'android' | 'ios';
   setMobileDevicePlatform: (p: 'android' | 'ios') => void;
 }
@@ -387,7 +394,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return INITIAL_USER;
   });
 
-  const [allUsers] = useState<UserProfile[]>(ALL_USERS_DATA);
+  const [allUsers, setAllUsers] = useState<UserProfile[]>(() => safeJsonParse('dcmaxwell_all_users', ALL_USERS_DATA));
 
   const [courses, setCourses] = useState<Course[]>(() => safeJsonParse('dcmaxwell_courses', COURSES_DATA));
   const [liveClasses, setLiveClasses] = useState<LiveClass[]>(() => safeJsonParse('dcmaxwell_live_classes', LIVE_CLASSES_DATA));
@@ -500,12 +507,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isEnquiryModalOpen, setIsEnquiryModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'register'>('register');
   const [mobileDevicePlatform, setMobileDevicePlatform] = useState<'android' | 'ios'>('android');
 
   // Persistence side-effects
   useEffect(() => {
     localStorage.setItem('dcmaxwell_user', JSON.stringify(currentUser));
   }, [currentUser]);
+
+  useEffect(() => {
+    localStorage.setItem('dcmaxwell_all_users', JSON.stringify(allUsers));
+  }, [allUsers]);
 
   useEffect(() => {
     localStorage.setItem('dcmaxwell_wishlist_leads', JSON.stringify(wishlistLeads));
@@ -618,6 +631,90 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     localStorage.setItem('dcmaxwell_cms_faqs', JSON.stringify(adminFaqs));
   }, [adminFaqs]);
+
+  // -------------------------------------------------------------
+  // STUDENT REGISTRATION & AUTHENTICATION (Mobile + OTP, Email + Password, Google)
+  // -------------------------------------------------------------
+  const registerStudent = (details: Partial<UserProfile> & { password?: string }) => {
+    const newStudent: UserProfile = {
+      id: `std-${Date.now()}`,
+      name: details.name || 'Registered Student',
+      email: details.email || 'student@dcmaxwell.edu',
+      phone: details.phone || '+91 98765 43210',
+      role: 'student',
+      avatar: details.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+      dob: details.dob || '2006-05-15',
+      gender: details.gender || 'Male',
+      city: details.city || 'Delhi NCR',
+      schoolCollege: details.schoolCollege || 'Delhi Public School',
+      studentClass: details.studentClass || 'Class 12th',
+      targetExam: details.targetExam || 'CA Foundation',
+      preferredLanguage: details.preferredLanguage || 'English & Hinglish',
+      enrolledCourseIds: ['crs-ca-foundation-package'],
+      completedLessonIds: [],
+      walletBalance: 500,
+      studyStreakDays: 1,
+      wishlistCourseIds: []
+    };
+
+    setCurrentUser(newStudent);
+    setAllUsers(prev => [newStudent, ...prev]);
+    setRole('student');
+    setView('student_portal');
+    setIsAuthModalOpen(false);
+
+    setNotifications(prev => [
+      {
+        id: `notif-${Date.now()}`,
+        title: '🎉 Welcome to DC Maxwell Academy!',
+        message: `Welcome ${newStudent.name}! Your student registration is confirmed. ₹500 welcome credit has been credited to your wallet.`,
+        type: 'registration',
+        category: 'registration',
+        date: 'Just now',
+        read: false
+      },
+      ...prev
+    ]);
+  };
+
+  const loginStudent = (identifier: string, method: 'otp' | 'password' | 'google' = 'otp') => {
+    const cleanId = identifier.trim().toLowerCase();
+    const cleanDigits = identifier.replace(/\D/g, '');
+    const matched = allUsers.find(u => 
+      u.email.toLowerCase() === cleanId ||
+      (cleanDigits.length >= 10 && u.phone.replace(/\D/g, '').includes(cleanDigits.slice(-10)))
+    );
+
+    if (matched) {
+      setCurrentUser(matched);
+      setRole(matched.role || 'student');
+      setView(matched.role === 'student' ? 'student_portal' : 'admin_panel');
+      setIsAuthModalOpen(false);
+      return true;
+    } else {
+      const autoUser: UserProfile = {
+        ...INITIAL_USER,
+        id: `std-${Date.now()}`,
+        name: identifier.includes('@') ? identifier.split('@')[0] : (method === 'google' ? 'Google Student' : 'Verified Learner'),
+        email: identifier.includes('@') ? identifier : `${cleanDigits || 'student'}@dcmaxwell.edu`,
+        phone: identifier.includes('@') ? '+91 98765 43210' : identifier,
+        role: 'student',
+        walletBalance: 500,
+        targetExam: 'CA Foundation'
+      };
+      setCurrentUser(autoUser);
+      setAllUsers(prev => [autoUser, ...prev]);
+      setRole('student');
+      setView('student_portal');
+      setIsAuthModalOpen(false);
+      return true;
+    }
+  };
+
+  const logoutStudent = () => {
+    setCurrentUser(INITIAL_USER);
+    setView('website');
+  };
 
   // -------------------------------------------------------------
   // 1. COUPON SYSTEM IMPLEMENTATION
@@ -2613,6 +2710,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setIsCartOpen,
         isEnquiryModalOpen,
         setIsEnquiryModalOpen,
+        isAuthModalOpen,
+        setIsAuthModalOpen,
+        authModalMode,
+        setAuthModalMode,
+        registerStudent,
+        loginStudent,
+        logoutStudent,
         mobileDevicePlatform,
         setMobileDevicePlatform
       }}

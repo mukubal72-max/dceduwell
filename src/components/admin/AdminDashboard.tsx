@@ -11,6 +11,8 @@ import { CourseAdministrationView } from './CourseAdministrationView';
 import { ContentManagerView } from './ContentManagerView';
 import { StudyMaterialManagerView } from './StudyMaterialManagerView';
 import { BatchManagerView } from './BatchManagerView';
+import { CourseHierarchyExplorer } from './CourseHierarchyExplorer';
+import { CourseCreationModal } from './CourseCreationModal';
 import { SupportTicketsView } from '../common/SupportTicketsView';
 import { CounsellorPanel } from '../counsellor/CounsellorPanel';
 import {
@@ -95,7 +97,7 @@ export const AdminDashboard: React.FC = () => {
   } = useApp();
 
   const [activeTab, setActiveTab] = useState<
-    'analytics' | 'study_materials' | 'cms' | 'batches' | 'courses' | 'combos' | 'subscriptions' | 'coupons' | 'orders' | 'wishlist_crm' | 'notification_broadcast' | 'live_classes' | 'question_bank' | 'tests' | 'content_security' | 'students' | 'crm' | 'support_tickets'
+    'analytics' | 'hierarchy' | 'study_materials' | 'cms' | 'batches' | 'courses' | 'combos' | 'subscriptions' | 'coupons' | 'orders' | 'wishlist_crm' | 'notification_broadcast' | 'live_classes' | 'question_bank' | 'tests' | 'content_security' | 'students' | 'crm' | 'support_tickets'
   >('analytics');
 
   // Course batch creation modal state
@@ -399,6 +401,7 @@ export const AdminDashboard: React.FC = () => {
       <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-1.5 overflow-x-auto text-xs font-bold">
         {[
           { id: 'analytics', label: 'Executive Analytics', icon: <TrendingUp className="w-3.5 h-3.5" /> },
+          { id: 'hierarchy', label: 'Course Hierarchy (Category → Lecture)', icon: <FolderKanban className="w-3.5 h-3.5 text-emerald-500" /> },
           { id: 'study_materials', label: `Study Material Management (${studyMaterials.length})`, icon: <BookOpen className="w-3.5 h-3.5 text-amber-500" /> },
           { id: 'cms', label: 'Content Management (CMS)', icon: <FileText className="w-3.5 h-3.5 text-amber-500" /> },
           { id: 'batches', label: 'Academic Batches (7 Modules)', icon: <FolderKanban className="w-3.5 h-3.5 text-indigo-600" /> },
@@ -1435,6 +1438,11 @@ export const AdminDashboard: React.FC = () => {
         <StudyMaterialManagerView />
       )}
 
+      {/* 3. COURSE HIERARCHY EXPLORER (Category → Course → Batch → Subject → Chapter → Lecture) */}
+      {activeTab === 'hierarchy' && (
+        <CourseHierarchyExplorer />
+      )}
+
       {/* CONTENT MANAGEMENT SYSTEM (CMS) TAB */}
       {activeTab === 'cms' && (
         <ContentManagerView />
@@ -2052,126 +2060,12 @@ export const AdminDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* CREATE COURSE BATCH MODAL */}
-      {showAddCourseModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl p-6 max-w-lg w-full border border-slate-200 shadow-2xl space-y-4 text-xs max-h-[90vh] overflow-y-auto">
-            <h3 className="text-sm font-bold text-slate-900 font-serif">Create New Course Batch</h3>
-            
-            <form onSubmit={handleCreateCourse} className="space-y-4">
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Course Batch Title *</label>
-                <input
-                  type="text"
-                  required
-                  value={newCourseTitle}
-                  onChange={(e) => setNewCourseTitle(e.target.value)}
-                  placeholder="e.g. Masterstroke NEET 2026 Crash Revision"
-                  className="w-full p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Offer Price (₹) *</label>
-                  <input
-                    type="number"
-                    required
-                    value={newCoursePrice}
-                    onChange={(e) => {
-                      const val = Number(e.target.value);
-                      setNewCoursePrice(val);
-                      if (newCourseOriginalPrice > val && val > 0) {
-                        setNewCourseDiscount(Math.round(((newCourseOriginalPrice - val) / newCourseOriginalPrice) * 100));
-                      }
-                    }}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">MRP Price (₹) *</label>
-                  <input
-                    type="number"
-                    required
-                    value={newCourseOriginalPrice}
-                    onChange={(e) => {
-                      const orig = Number(e.target.value);
-                      setNewCourseOriginalPrice(orig);
-                      if (orig > newCoursePrice && newCoursePrice > 0) {
-                        setNewCourseDiscount(Math.round(((orig - newCoursePrice) / orig) * 100));
-                      }
-                    }}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Discount %</label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      value={newCourseDiscount}
-                      onChange={(e) => setNewCourseDiscount(Number(e.target.value))}
-                      className="w-full p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 pr-7"
-                    />
-                    <Percent className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-3" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Target Category</label>
-                  <select
-                    value={newCourseCategory}
-                    onChange={(e) => setNewCourseCategory(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 bg-white"
-                  >
-                    <option value="JEE (Main & Adv)">JEE (Main & Adv)</option>
-                    <option value="NEET (Medical)">NEET (Medical)</option>
-                    <option value="CA & Commerce (Foundation/Inter)">CA & Commerce (Foundation/Inter)</option>
-                    <option value="UPSC & Civil Services">UPSC & Civil Services</option>
-                    <option value="Foundation (9-10th)">Foundation (Class 9-10)</option>
-                    <option value="Tech & Data Science">Tech & Data Science</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Assigned Lead Faculty</label>
-                  <select
-                    value={newCourseFaculty}
-                    onChange={(e) => setNewCourseFaculty(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 bg-white"
-                  >
-                    <option value="Er. Rajeshwar Varma">Er. Rajeshwar Varma (Ex-IIT Bombay, Physics)</option>
-                    <option value="Dr. Ananya Mukherjee">Dr. Ananya Mukherjee (AIIMS Gold Medalist, Biology)</option>
-                    <option value="CA CS Nitin Sharma">CA CS Nitin Sharma (AIR 3 Rankholder Faculty)</option>
-                    <option value="Prof. Hemant K. Gupta">Prof. Hemant K. Gupta (Ex-UPSC Invigilator)</option>
-                    <option value="Dr. Vivek Sachdeva">Dr. Vivek Sachdeva (Organic Chem Specialist)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowAddCourseModal(false)}
-                  className="px-4 py-2 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-indigo-950 text-white font-bold rounded-xl hover:bg-indigo-900 shadow-md"
-                >
-                  Publish Batch
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* FULL 17-FIELD COURSE CREATION MODAL */}
+      <CourseCreationModal
+        isOpen={showAddCourseModal}
+        onClose={() => setShowAddCourseModal(false)}
+        initialCategory={newCourseCategory}
+      />
     </div>
   );
 };

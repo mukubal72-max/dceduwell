@@ -99,6 +99,15 @@ export interface Course {
   packageSubjects?: string[];
   packageDeliverables?: CoursePackageDeliverables;
   hasFreeDemo?: boolean;
+  courseDuration?: string;
+  duration?: string;
+  demoVideos?: { title: string; videoUrl: string; durationMinutes?: number; isFreePreview?: boolean }[];
+  studyMaterialIncluded?: boolean;
+  studyMaterialCount?: number;
+  studyMaterialsList?: string[];
+  testsIncluded?: boolean;
+  testsCount?: number;
+  testsList?: string[];
 }
 
 export interface LiveClass {
@@ -660,6 +669,10 @@ export interface UserProfile {
   studentClass?: string;
   schoolCollege?: string;
   targetExam: string;
+  dob?: string;
+  gender?: 'Male' | 'Female' | 'Other' | 'Prefer not to say';
+  city?: string;
+  preferredLanguage?: string;
   enrolledCourseIds: string[];
   completedLessonIds: string[];
   walletBalance: number;

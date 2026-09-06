@@ -39,12 +39,18 @@ export const INITIAL_USER: UserProfile = {
   phone: '+91 98765 43210',
   role: 'student',
   avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80',
-  enrolledCourseIds: ['crs-jee-pinnacle', 'crs-neet-vision'],
-  completedLessonIds: ['les-1', 'les-2', 'les-5'],
-  targetExam: 'JEE Advanced 2026',
+  dob: '2007-04-18',
+  gender: 'Male',
+  city: 'New Delhi',
+  schoolCollege: 'Delhi Public School, R.K. Puram',
+  studentClass: 'Class 12th',
+  targetExam: 'CA Foundation',
+  preferredLanguage: 'English & Hinglish',
+  enrolledCourseIds: ['crs-ca-foundation', 'crs-jee-pinnacle', 'crs-neet-vision'],
+  completedLessonIds: ['les-ca-1', 'les-ca-2', 'les-1'],
   walletBalance: 1250,
   studyStreakDays: 14,
-  wishlistCourseIds: ['crs-ca-foundation', 'crs-cbse-12']
+  wishlistCourseIds: ['crs-cbse-12']
 };
 
 export const COURSES_DATA: Course[] = [
@@ -364,9 +370,12 @@ export const COURSES_DATA: Course[] = [
     id: 'crs-ca-foundation-package',
     title: 'CA Foundation Complete Video Course Package (All 4 Papers + Test Series)',
     tagline: 'Comprehensive ICAI Syllabus Mastery: Accounts, Business Law, Quantitative Aptitude & Economics with Top All India Ranker Mentors.',
-    category: 'CA & Commerce (Foundation/Inter)',
+    category: 'CA Foundation',
     format: 'Video Course Package',
     targetExam: 'ICAI CA Foundation Exam 2026',
+    batchName: 'Achievers Alpha Dec 2026 Batch',
+    courseDuration: '280+ Hours Live & Recorded / 180 Days',
+    duration: '280+ Hours',
     language: 'English & Hinglish',
     thumbnail: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80',
     bannerImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80',
@@ -387,9 +396,27 @@ export const COURSES_DATA: Course[] = [
     isPopular: true,
     isTrending: true,
     includesTestSeries: true,
+    testsIncluded: true,
+    testsCount: 20,
     includesHardcopyBooks: true,
+    studyMaterialIncluded: true,
+    studyMaterialCount: 85,
     certificateProvided: true,
     hasFreeDemo: true,
+    demoVideos: [
+      {
+        title: 'CA Foundation Accounts - Free Demo Masterclass (BRS & Accounting Basics)',
+        videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        durationMinutes: 45,
+        isFreePreview: true
+      },
+      {
+        title: 'Business Laws - Demo: Contract Act Essential Elements & Case Studies',
+        videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+        durationMinutes: 40,
+        isFreePreview: true
+      }
+    ],
     packageSubjects: [
       'Paper 1: Accounting (Principles & Practice)',
       'Paper 2: Business Laws & Business Correspondence (BCR)',
@@ -424,18 +451,57 @@ export const COURSES_DATA: Course[] = [
     chapters: [
       {
         id: 'ch-ca-acc-1',
-        subject: 'Accounting',
-        title: 'Accounting Process, Bank Reconciliation & Depreciation',
+        subject: 'Accounts',
+        title: 'Chapter 1: Theoretical Framework & Accounting Process',
         lessons: [
           {
             id: 'les-ca-1',
-            title: 'Bank Reconciliation Statement (BRS) - Passbook & Cashbook Dynamics',
+            title: 'Lecture 1: Meaning and Scope of Accounting & Basic Concepts',
+            durationMinutes: 65,
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+            isFreePreview: true,
+            notesPdfUrl: '#',
+            notesPdfTitle: 'Lecture_1_Accounting_Concepts_Framework.pdf',
+            summary: 'Comprehensive introduction to accounting concepts, GAAP, capital vs revenue expenditures, and qualitative characteristics of financial statements.',
+            timestamps: [
+              { time: '00:00', label: 'Overview & Syllabus Roadmap' },
+              { time: '15:30', label: 'Accounting Principles & Concepts' },
+              { time: '35:00', label: 'Capital vs Revenue Expenditure' },
+              { time: '52:00', label: 'ICAI Foundation Practice Questions' }
+            ]
+          },
+          {
+            id: 'les-ca-2',
+            title: 'Lecture 2: Accounting Principles, Journal & Ledger Posting',
+            durationMinutes: 72,
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+            isFreePreview: true,
+            notesPdfUrl: '#',
+            notesPdfTitle: 'Lecture_2_Journal_Ledger_TrialBalance.pdf',
+            summary: 'Double-entry bookkeeping dynamics, golden rules of debit/credit, comprehensive journal entry illustrations, and ledger balancing.',
+            timestamps: [
+              { time: '00:00', label: 'Double-Entry Golden Rules' },
+              { time: '22:15', label: 'Complex Journal Entries' },
+              { time: '48:30', label: 'Ledger Posting & Balancing' },
+              { time: '64:00', label: 'Trial Balance Verification' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ch-ca-acc-2',
+        subject: 'Accounts',
+        title: 'Chapter 2: Bank Reconciliation Statement (BRS) & Depreciation',
+        lessons: [
+          {
+            id: 'les-ca-3',
+            title: 'Lecture 1: BRS - Passbook & Cashbook Dynamics',
             durationMinutes: 68,
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
             isFreePreview: true,
             notesPdfUrl: '#',
             notesPdfTitle: 'CA_Foundation_BRS_Summary_Handwritten.pdf',
-            summary: 'Comprehensive treatment of timing differences, errors in cash book vs pass book, and adjusted cash book approach for exam full marks.',
+            summary: 'Timing differences, errors in cash book vs pass book, and adjusted cash book approach for exam full marks.',
             timestamps: [
               { time: '00:00', label: 'BRS Core Concept & Logic' },
               { time: '20:15', label: 'Timing & Clerical Errors' },
@@ -444,8 +510,8 @@ export const COURSES_DATA: Course[] = [
             ]
           },
           {
-            id: 'les-ca-2',
-            title: 'Depreciation Accounting - SLM, WDV & Change in Method',
+            id: 'les-ca-4',
+            title: 'Lecture 2: Depreciation Accounting - SLM, WDV & Change in Method',
             durationMinutes: 75,
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
             isFreePreview: false,
